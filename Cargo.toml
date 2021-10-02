@@ -1,0 +1,12 @@
+[package]
+name = "http-exec"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+warp = "0.3"
+zip = "0.5"
+hyper = "0.14"
+walkdir = "2.3"
+tempdir = "0.3"
