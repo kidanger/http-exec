@@ -58,9 +58,9 @@ fn pack_all(stdout: &[u8], stderr: &[u8]) -> Option<Vec<u8>> {
     }
 
     zip.start_file("stdout", options).ok()?;
-    zip.write_all(&stdout).ok()?;
+    zip.write_all(stdout).ok()?;
     zip.start_file("stderr", options).ok()?;
-    zip.write_all(&stderr).ok()?;
+    zip.write_all(stderr).ok()?;
 
     Some(zip.finish().ok()?.into_inner())
 }
