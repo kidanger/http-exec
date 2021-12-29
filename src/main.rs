@@ -7,8 +7,9 @@ use std::{
 use tempdir::TempDir;
 use walkdir::WalkDir;
 use warp::Filter;
+use zip::ZipArchive;
 
-fn unzip_and_get_command<R: Read + Seek>(mut zip: zip::ZipArchive<R>) -> Option<String> {
+fn unzip_and_get_command<R: Read + Seek>(mut zip: ZipArchive<R>) -> Option<String> {
     let mut args = String::new();
     for i in 0..zip.len() {
         let mut file = zip.by_index(i).ok()?;
@@ -65,7 +66,7 @@ fn pack_all(stdout: &[u8], stderr: &[u8]) -> Option<Vec<u8>> {
     Some(zip.finish().ok()?.into_inner())
 }
 
-fn doall<R: Read + Seek>(zip: zip::ZipArchive<R>) -> Option<Vec<u8>> {
+fn doall<R: Read + Seek>(zip: ZipArchive<R>) -> Option<Vec<u8>> {
     let _dir = if std::env::var("SERVE_TMPDIR").is_ok() {
         let dir = TempDir::new("serve").ok()?;
         dbg!(dir.path());
@@ -88,12 +89,9 @@ async fn main() {
         .and(warp::body::bytes())
         .map(|data: warp::hyper::body::Bytes| {
             let reader = Cursor::new(data);
-            let zip = zip::ZipArchive::new(reader).unwrap();
-
-            if let Some(out) = doall(zip) {
-                out
-            } else {
-                "couldn't run the thing".as_bytes().to_vec()
+            match ZipArchive::new(reader).ok().and_then(doall) {
+                Some(output) => output,
+                None => "couldn't run the thing".as_bytes().to_vec(),
             }
         });
 
