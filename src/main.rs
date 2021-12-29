@@ -82,7 +82,7 @@ fn doall<R: Read + Seek>(zip: zip::ZipArchive<R>) -> Option<Vec<u8>> {
     Some(output)
 }
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() {
     let hello = warp::post()
         .and(warp::body::bytes())

@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1", features = ["rt", "macros"] }
 warp = "0.3"
 zip = "0.5"
 hyper = "0.14"
